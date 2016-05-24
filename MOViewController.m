@@ -1,5 +1,6 @@
 //
 //  MOViewController.m
+//  StaffHelper
 //
 //  Created by 馍馍帝😈 on 16/1/21.
 //  Copyright © 2016年 馍馍帝👿. All rights reserved.
@@ -475,7 +476,7 @@
             break;
             
         case MONaviLeftTypePage:
-            _leftButton.image = [UIImage imageNamed:@"page"];
+            _leftButton.image = [UIImage imageNamed:@"navi_page"];
             
             [_leftButton addTarget:self action:@selector(leftClick:) forControlEvents:UIControlEventTouchUpInside];
             
@@ -516,7 +517,7 @@
             [self bringSubviewToFront:_rightSubButton];
             
             break;
-        
+            
         case MONaviRightSubTypeNO:
             
             _maxTitleRight = _rightButton.left;
@@ -550,7 +551,7 @@
             break;
         case MONaviRightTypeEdit:
             
-            [_rightButton setImage:[UIImage imageNamed:@"edit"]];
+            [_rightButton setImage:[UIImage imageNamed:@"navi_edit"]];
             
             [_rightButton changeLeft:MSW-48];
             
@@ -574,7 +575,7 @@
             
         case MONaviRightTypeEditDisable:
             
-            [_rightButton setImage:[UIImage imageNamed:@"edit_disable"]];
+            [_rightButton setImage:[UIImage imageNamed:@"navi_edit_disabled"]];
             
             [_rightButton changeLeft:MSW-48];
             
@@ -586,7 +587,7 @@
             
         case MONaviRightTypeTrash:
             
-            [_rightButton setImage:[UIImage imageNamed:@"trash"]];
+            [_rightButton setImage:[UIImage imageNamed:@"navi_trash"]];
             
             [_rightButton changeLeft:MSW-48];
             
@@ -597,7 +598,7 @@
             break;
         case MONaviRightTypeShare:
             
-            [_rightButton setImage:[UIImage imageNamed:@"share"]];
+            [_rightButton setImage:[UIImage imageNamed:@"navi_share"]];
             
             [_rightButton changeLeft:MSW-48];
             
@@ -608,7 +609,7 @@
             break;
         case MONaviRightTypeCheck:
             
-            [_rightButton setImage:[UIImage imageNamed:@"check"]];
+            [_rightButton setImage:[UIImage imageNamed:@"navi_check"]];
             
             [_rightButton changeLeft:MSW-48];
             
