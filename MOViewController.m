@@ -8,11 +8,17 @@
 
 #import "MOViewController.h"
 
+#define UIColorFromRGB(rgbValue) [UIColor colorWithRed:((float)((rgbValue & 0xFF0000) >> 16))/255.0 green:((float)((rgbValue & 0xFF00) >> 8))/255.0 blue:((float)(rgbValue & 0xFF))/255.0 alpha:1.0]
+
 #define NaviColor UIColorFromRGB(0x4e4e4e)
 
 #define NaviTitleColor UIColorFromRGB(0xffffff)
 
 #define NaviFont [UIFont boldSystemFontOfSize:IPhone4_5_6_6P(16, 16, 17, 18)]
+
+#define MSW ([UIScreen mainScreen].bounds.size.width)
+
+#define MSH ([UIScreen mainScreen].bounds.size.height)
 
 typedef enum : NSUInteger {
     TitleButtonTypeDown,
