@@ -14,6 +14,11 @@
 
 #define NaviFont [UIFont boldSystemFontOfSize:IPhone4_5_6_6P(16, 16, 17, 18)]
 
+typedef enum : NSUInteger {
+    TitleButtonTypeDown,
+    TitleButtonTypePull,
+} TitleButtonType;
+
 @interface TitleButton : UIButton
 
 {
@@ -22,6 +27,10 @@
     
     UIImageView *_arrowImg;
     
+    UIImageView *_pullImg;
+    
+    BOOL _isTransformed;
+    
 }
 
 @property(nonatomic,copy)NSString *title;
@@ -29,6 +38,8 @@
 @property(nonatomic,assign)CGFloat maxTitleRight;
 
 @property(nonatomic,strong)UIColor *titleColor;
+
+@property(nonatomic,assign)TitleButtonType type;
 
 @end
 
@@ -54,6 +65,14 @@
         _arrowImg.image = [UIImage imageNamed:@"white_down_arrow"];
         
         [self addSubview:_arrowImg];
+        
+        _pullImg = [[UIImageView alloc]initWithFrame:CGRectMake(self.width/2-3, self.height-11, 6, 4)];
+        
+        _pullImg.image = [UIImage imageNamed:@"navi_pull_image"];
+        
+        [self addSubview:_pullImg];
+        
+        _pullImg.hidden = YES;
         
     }
     
@@ -101,6 +120,26 @@
     _titleLabel.center = CGPointMake(self.width/2, _titleLabel.center.y);
     
     [_arrowImg changeLeft:_titleLabel.right+8];
+    
+}
+
+-(void)setType:(TitleButtonType)type
+{
+    
+    _type = type;
+    
+    _arrowImg.hidden = _type == TitleButtonTypePull;
+    
+    _pullImg.hidden = _type == TitleButtonTypeDown;
+    
+}
+
+-(void)didClick
+{
+    
+    _pullImg.transform = CGAffineTransformMakeRotation(_isTransformed?0:M_PI);
+    
+    _isTransformed = !_isTransformed;
     
 }
 
@@ -306,13 +345,9 @@
 
 {
     
-    NaviButton *_leftButton;
-    
     UILabel *_titleLabel;
     
     TitleButton *_titleButton;
-    
-    NaviButton *_rightButton;
     
     NumView *_numView;
     
@@ -322,6 +357,10 @@
     
 }
 
+@property(nonatomic,strong)NaviButton *rightButton;
+
+@property(nonatomic,strong)NaviButton *leftButton;
+
 @property(nonatomic,assign)BOOL shadowHidden;
 
 @property(nonatomic,strong)UIImage *leftImg;
@@ -329,6 +368,8 @@
 @property(nonatomic,strong)UIColor *titleColor;
 
 @property(nonatomic,strong)UIColor *rightColor;
+
+@property(nonatomic,strong)UIColor *leftColor;
 
 @end
 
@@ -348,6 +389,10 @@
         
         [self addSubview:_line];
         
+        _numView = [[NumView alloc]initWithFrame:CGRectMake(MSW-25, 28, 22, 22)];
+        
+        [self addSubview:_numView];
+        
         _leftButton = [[NaviButton alloc]initWithFrame:CGRectMake(0, 20, 48, 48)];
         
         [self addSubview:_leftButton];
@@ -360,11 +405,7 @@
         
         _rightSubButton = [[NaviButton alloc]initWithFrame:CGRectMake(MSW-101, 20, 48, 48)];
         
-        [self addSubview:_rightSubButton];
-        
-        _numView = [[NumView alloc]initWithFrame:CGRectMake(MSW-25, 28, 22, 22)];
-        
-        [self addSubview:_numView];
+        _rightSubButton.hidden = YES;
         
         _titleButton = [[TitleButton alloc]initWithFrame:CGRectMake(_leftButton.right+10, 20, MSW-_leftButton.width*2-32, 44)];
         
@@ -383,6 +424,10 @@
         [self addSubview:_titleLabel];
         
         self.titleType = MONaviTitleTypeLabel;
+        
+        [self bringSubviewToFront:_rightButton];
+        
+        [self bringSubviewToFront:_leftButton];
         
     }
     
@@ -428,6 +473,8 @@
         
         _titleLabel.hidden = YES;
         
+        _titleButton.type = _titleType == MONaviTitleTypeButton?TitleButtonTypeDown:TitleButtonTypePull;
+        
     }
     
 }
@@ -471,12 +518,17 @@
             
             _leftButton.image = [UIImage imageNamed:@"navi_back"];
             
+            [_rightButton changeWidth:48];
+            
             [_leftButton addTarget:self action:@selector(leftClick:) forControlEvents:UIControlEventTouchUpInside];
             
             break;
             
         case MONaviLeftTypePage:
+            
             _leftButton.image = [UIImage imageNamed:@"navi_page"];
+            
+            [_rightButton changeWidth:48];
             
             [_leftButton addTarget:self action:@selector(leftClick:) forControlEvents:UIControlEventTouchUpInside];
             
@@ -486,9 +538,22 @@
             
             _leftButton.image = [UIImage imageNamed:@"navi_close"];
             
+            [_rightButton changeWidth:48];
+            
             [_leftButton addTarget:self action:@selector(leftClick:) forControlEvents:UIControlEventTouchUpInside];
             
             break;
+            
+        case MONaviLeftTypeTitle:
+            
+            [_leftButton setImage:nil];
+            
+            [_leftButton changeWidth:70];
+            
+            [_leftButton addTarget:self action:@selector(leftClick:) forControlEvents:UIControlEventTouchUpInside];
+            
+            break;
+            
         case MONaviLeftTypeNO:
             _leftButton.image = nil;
             
@@ -506,6 +571,7 @@
     _rightSubType = rightSubType;
     
     switch (_rightSubType) {
+            
         case MONaviRightSubTypeSearch:
             
             _maxTitleRight = _rightSubButton.left;
@@ -514,7 +580,11 @@
             
             [_rightSubButton addTarget:self action:@selector(rightSubClick:) forControlEvents:UIControlEventTouchUpInside];
             
+            [self addSubview:_rightSubButton];
+            
             [self bringSubviewToFront:_rightSubButton];
+            
+            _rightSubButton.hidden = NO;
             
             break;
             
@@ -525,6 +595,28 @@
             [_rightSubButton setImage:nil];
             
             [_rightSubButton removeTarget:self action:@selector(rightSubClick:) forControlEvents:UIControlEventTouchUpInside];
+            
+            _rightSubButton.hidden = YES;
+            
+            [_rightSubButton removeFromSuperview];
+            
+            break;
+            
+        case MONaviRightSubTypeShare:
+            
+            _maxTitleRight = _rightSubButton.left;
+            
+            [_rightSubButton setImage:[UIImage imageNamed:@"navi_share"]];
+            
+            [_rightSubButton addTarget:self action:@selector(rightSubClick:) forControlEvents:UIControlEventTouchUpInside];
+            
+            [self addSubview:_rightSubButton];
+            
+            [self bringSubviewToFront:_rightSubButton];
+            
+            _rightSubButton.hidden = NO;
+            
+            break;
             
         default:
             break;
@@ -538,6 +630,7 @@
     _rightType = rightType;
     
     switch (_rightType) {
+            
         case MONaviRightTypeAdd:
             
             [_rightButton setImage:[UIImage imageNamed:@"navi_add"]];
@@ -549,6 +642,7 @@
             [_rightButton addTarget:self action:@selector(rightClick:) forControlEvents:UIControlEventTouchUpInside];
             
             break;
+            
         case MONaviRightTypeEdit:
             
             [_rightButton setImage:[UIImage imageNamed:@"navi_edit"]];
@@ -629,6 +723,7 @@
             [_rightButton addTarget:self action:@selector(rightClick:) forControlEvents:UIControlEventTouchUpInside];
             
             break;
+            
         case MONaviRightTypeTitle:
             
             [_rightButton setImage:nil];
@@ -663,6 +758,18 @@
             
             break;
             
+        case MONaviRightTypeSetting:
+            
+            [_rightButton setImage:[UIImage imageNamed:@"navi_setting"]];
+            
+            [_rightButton changeLeft:MSW-48];
+            
+            [_rightButton changeWidth:48];
+            
+            [_rightButton addTarget:self action:@selector(rightClick:) forControlEvents:UIControlEventTouchUpInside];
+            
+            break;
+            
         default:
             break;
     }
@@ -678,6 +785,15 @@
     
 }
 
+-(void)setLeftColor:(UIColor *)leftColor
+{
+    
+    _leftColor = leftColor;
+    
+    [_leftButton setTitleColor:leftColor forState:UIControlStateNormal];
+    
+}
+
 -(void)setRightTitle:(NSString *)rightTitle
 {
     
@@ -690,6 +806,21 @@
     }
     
     _rightButton.title = rightTitle;
+    
+}
+
+-(void)setLeftTitle:(NSString *)leftTitle
+{
+    
+    _leftTitle = leftTitle;
+    
+    if (_leftTitle.length && _leftType != MONaviLeftTypeTitle) {
+        
+        self.leftType = MONaviLeftTypeTitle;
+        
+    }
+    
+    _leftButton.title = leftTitle;
     
 }
 
@@ -750,6 +881,12 @@
         
     }
     
+    if (_titleButton.type == TitleButtonTypePull) {
+        
+        [_titleButton didClick];
+        
+    }
+    
 }
 
 -(void)setTitle:(NSString *)title
@@ -771,7 +908,7 @@
     
     MBProgressHUD *_defaultHUD;
     
-    MONaviView *_navi;
+    BOOL _haveChanged;
     
 }
 
@@ -808,6 +945,12 @@
     
     [super viewWillAppear:animated];
     
+    if (_navi.top != 0) {
+        
+        [_navi changeTop:0];
+        
+    }
+    
     [self.view bringSubviewToFront:_navi];
     
 }
@@ -835,6 +978,22 @@
 {
     
     _navi.rightTitle = rightTitle;
+    
+}
+
+-(void)setLeftTitle:(NSString *)leftTitle
+{
+    
+    _navi.leftTitle = leftTitle;
+    
+}
+
+-(void)setLeftColor:(UIColor *)leftColor
+{
+    
+    _leftColor = leftColor;
+    
+    _navi.leftColor = leftColor;
     
 }
 
@@ -955,6 +1114,68 @@
     _rightSubType = rightSubType;
     
     _navi.rightSubType = _rightSubType;
+    
+}
+
+-(void)setRightButtonEnable:(BOOL)rightButtonEnable
+{
+    
+    _rightButtonEnable = rightButtonEnable;
+    
+    _navi.rightButton.userInteractionEnabled = _rightButtonEnable;
+    
+}
+
+-(void)setLeftButtonEnable:(BOOL)leftButtonEnable
+{
+    
+    _leftButtonEnable = leftButtonEnable;
+    
+    _navi.leftButton.userInteractionEnabled = _leftButtonEnable;
+    
+}
+
+-(void)viewWillLayoutSubviews
+{
+    
+    [super viewWillLayoutSubviews];
+    
+    if (self.view.frame.size.height != MSH) {
+        
+        _haveChanged = YES;
+        
+    }else if(self.view.frame.size.height == MSH){
+        
+        if (_haveChanged) {
+            
+            for (UIView *subView in self.view.subviews) {
+                
+                [subView changeTop:subView.top];
+                
+            }
+            
+            _haveChanged = NO;
+            
+        }
+        
+    }
+    
+}
+
+-(void)popToViewControllerName:(NSString *)vcname
+{
+    
+    for (UIViewController *vc in self.navigationController.viewControllers) {
+        
+        if ([vcname isEqualToString:NSStringFromClass([vc class])]) {
+            
+            [self.navigationController popToViewController:vc animated:YES];
+            
+        }
+        
+        break;
+        
+    }
     
 }
 

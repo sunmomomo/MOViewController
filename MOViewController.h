@@ -1,5 +1,6 @@
 //
 //  MOViewController.h
+//  StaffHelper
 //
 //  Created by 馍馍帝😈 on 16/1/21.
 //  Copyright © 2016年 馍馍帝👿. All rights reserved.
@@ -17,6 +18,7 @@ typedef enum : NSUInteger {
     MONaviLeftTypeBack,
     MONaviLeftTypePage,
     MONaviLeftTypeClose,
+    MONaviLeftTypeTitle,
 } MONaviLeftType;
 
 typedef enum : NSUInteger {
@@ -31,16 +33,19 @@ typedef enum : NSUInteger {
     MONaviRightTypeCheck,
     MONaviRightTypeMore,
     MONaviRightTypeSearch,
+    MONaviRightTypeSetting,
 } MONaviRightType;
 
 typedef enum : NSUInteger {
     MONaviRightSubTypeNO,
     MONaviRightSubTypeSearch,
+    MONaviRightSubTypeShare,
 } MONaviRightSubType;
 
 typedef enum : NSUInteger {
     MONaviTitleTypeLabel,
     MONaviTitleTypeButton,
+    MONaviTitleTypePull,
 } MONaviTitleType;
 
 @protocol MONaviDelegate <NSObject>
@@ -71,6 +76,8 @@ typedef enum : NSUInteger {
 
 @property(nonatomic,copy)NSString *rightTitle;
 
+@property(nonatomic,copy)NSString *leftTitle;
+
 @property(nonatomic,assign)NSInteger msgNum;
 
 @property(nonatomic,assign)CGFloat maxTitleRight;
@@ -80,6 +87,8 @@ typedef enum : NSUInteger {
 @end
 
 @interface MOViewController : UIViewController<MONaviDelegate>
+
+@property(nonatomic,strong)MONaviView *navi;
 
 @property(nonatomic,strong)UIImage *unselectImg;
 
@@ -107,10 +116,20 @@ typedef enum : NSUInteger {
 
 @property(nonatomic,strong)UIColor *rightColor;
 
+@property(nonatomic,copy)NSString *leftTitle;
+
+@property(nonatomic,strong)UIColor *leftColor;
+
 @property(nonatomic,assign)BOOL navigationBarHidden;
+
+@property(nonatomic,assign)BOOL rightButtonEnable;
+
+@property(nonatomic,assign)BOOL leftButtonEnable;
 
 -(void)hudShow:(BOOL)show;
 
 -(void)reloadData;
+
+-(void)popToViewControllerName:(NSString*)vcname;
 
 @end
