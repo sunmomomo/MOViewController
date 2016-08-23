@@ -40,6 +40,7 @@ typedef enum : NSUInteger {
     MONaviRightSubTypeNO,
     MONaviRightSubTypeSearch,
     MONaviRightSubTypeShare,
+    MONaviRightSubTypeEdit,
 } MONaviRightSubType;
 
 typedef enum : NSUInteger {
@@ -88,8 +89,6 @@ typedef enum : NSUInteger {
 
 @interface MOViewController : UIViewController<MONaviDelegate>
 
-@property(nonatomic,strong)MONaviView *navi;
-
 @property(nonatomic,strong)UIImage *unselectImg;
 
 @property(nonatomic,strong)UIImage *selectedImg;
@@ -130,6 +129,10 @@ typedef enum : NSUInteger {
 
 -(void)reloadData;
 
--(void)popToViewControllerName:(NSString*)vcname;
+-(void)popToViewControllerName:(NSString*)vcname isReloadData:(BOOL)isReload;
+
+-(void)popViewControllerAndReloadData;
+
+-(void)showNoPermissionAlert;
 
 @end

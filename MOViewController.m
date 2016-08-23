@@ -8,17 +8,11 @@
 
 #import "MOViewController.h"
 
-#define UIColorFromRGB(rgbValue) [UIColor colorWithRed:((float)((rgbValue & 0xFF0000) >> 16))/255.0 green:((float)((rgbValue & 0xFF00) >> 8))/255.0 blue:((float)(rgbValue & 0xFF))/255.0 alpha:1.0]
-
 #define NaviColor UIColorFromRGB(0x4e4e4e)
 
 #define NaviTitleColor UIColorFromRGB(0xffffff)
 
 #define NaviFont [UIFont boldSystemFontOfSize:IPhone4_5_6_6P(16, 16, 17, 18)]
-
-#define MSW ([UIScreen mainScreen].bounds.size.width)
-
-#define MSH ([UIScreen mainScreen].bounds.size.height)
 
 typedef enum : NSUInteger {
     TitleButtonTypeDown,
@@ -413,7 +407,7 @@ typedef enum : NSUInteger {
         
         _rightSubButton.hidden = YES;
         
-        _titleButton = [[TitleButton alloc]initWithFrame:CGRectMake(_leftButton.right+10, 20, MSW-_leftButton.width*2-32, 44)];
+        _titleButton = [[TitleButton alloc]initWithFrame:CGRectMake(_leftButton.right+10, 20, MSW-_leftButton.width*2-20, 44)];
         
         [_titleButton addTarget:self action:@selector(titleClick:) forControlEvents:UIControlEventTouchUpInside];
         
@@ -593,7 +587,7 @@ typedef enum : NSUInteger {
             _rightSubButton.hidden = NO;
             
             break;
-            
+        
         case MONaviRightSubTypeNO:
             
             _maxTitleRight = _rightButton.left;
@@ -607,12 +601,28 @@ typedef enum : NSUInteger {
             [_rightSubButton removeFromSuperview];
             
             break;
-            
+    
         case MONaviRightSubTypeShare:
             
             _maxTitleRight = _rightSubButton.left;
             
             [_rightSubButton setImage:[UIImage imageNamed:@"navi_share"]];
+            
+            [_rightSubButton addTarget:self action:@selector(rightSubClick:) forControlEvents:UIControlEventTouchUpInside];
+            
+            [self addSubview:_rightSubButton];
+            
+            [self bringSubviewToFront:_rightSubButton];
+            
+            _rightSubButton.hidden = NO;
+            
+            break;
+            
+        case MONaviRightSubTypeEdit:
+            
+            _maxTitleRight = _rightSubButton.left;
+            
+            [_rightSubButton setImage:[UIImage imageNamed:@"navi_edit"]];
             
             [_rightSubButton addTarget:self action:@selector(rightSubClick:) forControlEvents:UIControlEventTouchUpInside];
             
@@ -912,6 +922,8 @@ typedef enum : NSUInteger {
 
 {
     
+    MONaviView *_navi;
+    
     MBProgressHUD *_defaultHUD;
     
     BOOL _haveChanged;
@@ -1017,12 +1029,12 @@ typedef enum : NSUInteger {
     
     if (show) {
         
-        [_defaultHUD show:YES];
+        [_defaultHUD showAnimated:YES];
         
     }else
     {
         
-        [_defaultHUD hide:YES];
+        [_defaultHUD hideAnimated:YES];
         
     }
     
@@ -1168,7 +1180,7 @@ typedef enum : NSUInteger {
     
 }
 
--(void)popToViewControllerName:(NSString *)vcname
+-(void)popToViewControllerName:(NSString *)vcname isReloadData:(BOOL)isReload
 {
     
     for (UIViewController *vc in self.navigationController.viewControllers) {
@@ -1177,11 +1189,37 @@ typedef enum : NSUInteger {
             
             [self.navigationController popToViewController:vc animated:YES];
             
+            if (isReload && [vc isKindOfClass:[MOViewController class]]) {
+                
+                [(MOViewController*)vc reloadData];
+                
+            }
+            
+            break;
+            
         }
         
-        break;
+    }
+    
+}
+
+-(void)popViewControllerAndReloadData
+{
+    
+    [self.navigationController popViewControllerAnimated:YES];
+    
+    if ([self.navigationController.visibleViewController isKindOfClass:[MOViewController class]]) {
+        
+        [((MOViewController*)self.navigationController.visibleViewController) reloadData];
         
     }
+    
+}
+
+-(void)showNoPermissionAlert
+{
+    
+    [[[UIAlertView alloc]initWithTitle:@"抱歉，您无该功能权限" message:nil delegate:nil cancelButtonTitle:@"确定" otherButtonTitles:nil]show];
     
 }
 
