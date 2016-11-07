@@ -9,7 +9,7 @@ Pod::Spec.new do |s|
   s.platform     = :ios, '7.1'
   s.requires_arc = true
   s.source       = { :git => "https://github.com/sunmomomo/MOViewController.git", :tag => "1.0.0" }
-  s.source_files  = "Classes", "Classes/**/*.{h,m}"
-  s.resource  = "icon.png"
+  s.source_files  = "Classes", "Classes/*.{h,m}"
+  s.resources =  "Assets/*.png"
   s.framework = "UIKit"
 end

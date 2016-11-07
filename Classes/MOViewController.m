@@ -8,9 +8,13 @@
 
 #import "MOViewController.h"
 
-#define NaviColor UIColorFromRGB(0x4e4e4e)
+#define IPhone4_5_6_6P(a,b,c,d) (CGSizeEqualToSize(CGSizeMake(320, 480), [[UIScreen mainScreen] bounds].size) ?(a) :(CGSizeEqualToSize(CGSizeMake(320, 568), [[UIScreen mainScreen] bounds].size) ? (b) : (CGSizeEqualToSize(CGSizeMake(375, 667), [[UIScreen mainScreen] bounds].size) ?(c) : (CGSizeEqualToSize(CGSizeMake(414, 736), [[UIScreen mainScreen] bounds].size) ?(d) : a))))
 
-#define NaviTitleColor UIColorFromRGB(0xffffff)
+#define MOColorFromRGB [UIColor colorWithRed:((float)((rgbValue & 0xFF0000) >> 16))/255.0 green:((float)((rgbValue & 0xFF00) >> 8))/255.0 blue:((float)(rgbValue & 0xFF))/255.0 alpha:1.0]
+
+#define NaviColor MOColorFromRGB(0x4e4e4e)
+
+#define NaviTitleColor MOColorFromRGB(0xffffff)
 
 #define NaviFont [UIFont boldSystemFontOfSize:IPhone4_5_6_6P(16, 16, 17, 18)]
 
@@ -60,13 +64,13 @@ typedef enum : NSUInteger {
         
         [self addSubview:_titleLabel];
         
-        _arrowImg = [[UIImageView alloc]initWithFrame:CGRectMake(_titleLabel.right+8, frame.size.height/2-3, 10.6, 6)];
+        _arrowImg = [[UIImageView alloc]initWithFrame:CGRectMake(_titleLabel.frame.origin.x+_titleLabel.frame.size.width+8, frame.size.height/2-3, 10.6, 6)];
         
         _arrowImg.image = [UIImage imageNamed:@"white_down_arrow"];
         
         [self addSubview:_arrowImg];
         
-        _pullImg = [[UIImageView alloc]initWithFrame:CGRectMake(self.width/2-3, self.height-11, 6, 4)];
+        _pullImg = [[UIImageView alloc]initWithFrame:CGRectMake(self.frame.size.width/2-3, self.height-11, 6, 4)];
         
         _pullImg.image = [UIImage imageNamed:@"navi_pull_image"];
         
@@ -100,7 +104,7 @@ typedef enum : NSUInteger {
     
     if (self.maxTitleRight) {
         
-        if (_titleLabel.right+28.6>self.maxTitleRight) {
+        if (_titleLabel.frame.origin.x+_titleLabel.frame.size.width+28.6>self.maxTitleRight) {
             
             [_titleLabel changeWidth:self.maxTitleRight-_titleLabel.left-28.6];
             
@@ -109,7 +113,7 @@ typedef enum : NSUInteger {
     }else
     {
         
-        if (_titleLabel.width>MSW-100) {
+        if (_titleLabel.frame.size.width>MSW-100) {
             
             [_titleLabel changeWidth:MSW-100];
             
@@ -117,9 +121,9 @@ typedef enum : NSUInteger {
         
     }
     
-    _titleLabel.center = CGPointMake(self.width/2, _titleLabel.center.y);
+    _titleLabel.center = CGPointMake(self.frame.size.width/2, _titleLabel.center.y);
     
-    [_arrowImg changeLeft:_titleLabel.right+8];
+    [_arrowImg changeLeft:_titleLabel.frame.origin.x+_titleLabel.frame.size.width+8];
     
 }
 
@@ -188,7 +192,7 @@ typedef enum : NSUInteger {
         
         _numLabel.adjustsFontSizeToFitWidth = YES;
         
-        _numLabel.layer.cornerRadius = _numLabel.width/2;
+        _numLabel.layer.cornerRadius = _numLabel.frame.size.width/2;
         
         _numLabel.layer.masksToBounds = YES;
         
@@ -264,9 +268,9 @@ typedef enum : NSUInteger {
         
         [self addSubview:_imgView];
         
-        _imgView.center = CGPointMake(self.width/2, self.height/2);
+        _imgView.center = CGPointMake(self.frame.size.width/2, self.frame.size.height/2);
         
-        _label = [[UILabel alloc]initWithFrame:CGRectMake(0, 0, self.width, self.height)];
+        _label = [[UILabel alloc]initWithFrame:CGRectMake(0, 0, self.frame.size.width, self.frame.size.height)];
         
         _label.textAlignment = NSTextAlignmentRight;
         
@@ -407,13 +411,13 @@ typedef enum : NSUInteger {
         
         _rightSubButton.hidden = YES;
         
-        _titleButton = [[TitleButton alloc]initWithFrame:CGRectMake(_leftButton.right+10, 20, MSW-_leftButton.width*2-20, 44)];
+        _titleButton = [[TitleButton alloc]initWithFrame:CGRectMake(_leftButton.frame.origin.x+_leftButton.frame.size.width+10, 20, MSW-_leftButton.frame.size.width*2-20, 44)];
         
         [_titleButton addTarget:self action:@selector(titleClick:) forControlEvents:UIControlEventTouchUpInside];
         
         [self addSubview:_titleButton];
         
-        _titleLabel = [[UILabel alloc]initWithFrame:CGRectMake(_leftButton.right+10, 20, MSW-_leftButton.width*2-20, 44)];
+        _titleLabel = [[UILabel alloc]initWithFrame:CGRectMake(_leftButton.frame.origin.x+_leftButton.frame.size.width+10, 20, MSW-_leftButton.frame.size.width*2-20, 44)];
         
         _titleLabel.textColor = NaviTitleColor;
         
@@ -963,7 +967,7 @@ typedef enum : NSUInteger {
     
     [super viewWillAppear:animated];
     
-    if (_navi.top != 0) {
+    if (_navi.frame.origin.y != 0) {
         
         [_navi changeTop:0];
         
@@ -1168,7 +1172,7 @@ typedef enum : NSUInteger {
             
             for (UIView *subView in self.view.subviews) {
                 
-                [subView changeTop:subView.top];
+                [subView changeTop:subView.frame.origin.y];
                 
             }
             
