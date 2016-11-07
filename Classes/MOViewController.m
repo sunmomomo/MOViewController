@@ -70,7 +70,7 @@ typedef enum : NSUInteger {
         
         [self addSubview:_arrowImg];
         
-        _pullImg = [[UIImageView alloc]initWithFrame:CGRectMake(self.frame.size.width/2-3, self.height-11, 6, 4)];
+        _pullImg = [[UIImageView alloc]initWithFrame:CGRectMake(self.frame.size.width/2-3, self.frame.size.height-11, 6, 4)];
         
         _pullImg.image = [UIImage imageNamed:@"navi_pull_image"];
         
@@ -100,13 +100,15 @@ typedef enum : NSUInteger {
     
     _titleLabel.text = _title;
     
-    [_titleLabel autoWidth];
+    CGSize size = [self sizeThatFits:CGSizeMake(MAXFLOAT, _titleLabel.frame.size.height)];
+    
+    [_titleLabel setFrame:(CGRectMake(_titleLabel.frame.origin.x,_titleLabel.frame.origin.y,size.width,_titleLabel.frame.size.height))];
     
     if (self.maxTitleRight) {
         
         if (_titleLabel.frame.origin.x+_titleLabel.frame.size.width+28.6>self.maxTitleRight) {
             
-            [_titleLabel changeWidth:self.maxTitleRight-_titleLabel.left-28.6];
+            [_titleLabel changeWidth:self.maxTitleRight-_titleLabel.frame.origin.x-28.6];
             
         }
         
@@ -578,7 +580,7 @@ typedef enum : NSUInteger {
             
         case MONaviRightSubTypeSearch:
             
-            _maxTitleRight = _rightSubButton.left;
+            _maxTitleRight = _rightSubButton.frame.origin.x;
             
             [_rightSubButton setImage:[UIImage imageNamed:@"navi_search"]];
             
@@ -594,7 +596,7 @@ typedef enum : NSUInteger {
         
         case MONaviRightSubTypeNO:
             
-            _maxTitleRight = _rightButton.left;
+            _maxTitleRight = _rightButton.frame.origin.x;
             
             [_rightSubButton setImage:nil];
             
@@ -608,7 +610,7 @@ typedef enum : NSUInteger {
     
         case MONaviRightSubTypeShare:
             
-            _maxTitleRight = _rightSubButton.left;
+            _maxTitleRight = _rightSubButton.frame.origin.x;
             
             [_rightSubButton setImage:[UIImage imageNamed:@"navi_share"]];
             
@@ -624,7 +626,7 @@ typedef enum : NSUInteger {
             
         case MONaviRightSubTypeEdit:
             
-            _maxTitleRight = _rightSubButton.left;
+            _maxTitleRight = _rightSubButton.frame.origin.x;
             
             [_rightSubButton setImage:[UIImage imageNamed:@"navi_edit"]];
             
